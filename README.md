@@ -4,11 +4,11 @@ A API de gerenciamento de usuários foi programada na linguagem GOLANG com o int
 <h1> Principais funcionalidades: </h1>
 
 <h2>Empregado:</h2>
-1.1 Inserir usuário no banco;
-1.2 Editar usuário no banco;
-1.3 Remover usuário do banco;
-1.4 Listar usuários do banco.
-1.5 Pegar ID da transação bancária.
+1.1 Inserir usuário no banco; </br>
+1.2 Editar usuário no banco;</br>
+1.3 Remover usuário do banco;</br>
+1.4 Listar usuários do banco.</br>
+1.5 Pegar ID da transação bancária.</br>
 
 <h2>Cliente:</h2>
 1.1 
