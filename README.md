@@ -12,7 +12,7 @@ A API de gerenciamento de usuários foi programada na linguagem GOLANG com o int
 <b>7.</b> No input de filename, selecione o ícone de pastinha e escolha o arquivo disponibilizado de nome “user_management” mencionado anteriormente;</br>
 <b>8.</b> Clique em Restore.</br>
 </br>
-Agora que você já tem o banco de dados, vamos configurar o código ao banco de dados. Procure o diretório Database, entre no arquivo <b>db.go</b> e coloque a senha cadastrada no seu banco de dados, verifique também se a porta e o nome estão corretos para evitar falhas de funcionamento. Finalmente, podemos rodar a nossa aplicação com o comando “<b>go run main.go</b>”. Aproveite!</br>
+Agora que você já tem o banco de dados, vamos configurar o código ao banco de dados. Procure o diretório <b>Database</b>, entre no arquivo <b>db.go</b> e coloque a senha cadastrada no seu banco de dados, verifique também se a porta e o nome estão corretos para evitar falhas de funcionamento. Finalmente, podemos rodar a nossa aplicação com o comando “<b>go run main.go</b>”. Aproveite!</br>
 
 </br>
 <h1> Principais funcionalidades: </h1>
