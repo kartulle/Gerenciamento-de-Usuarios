@@ -1,7 +1,8 @@
 # Gerenciamento-de-Usuarios - Documentação
 A API de gerenciamento de usuários foi programada na linguagem GOLANG com o intuito de gerenciar os usuários de um banco online. A api é limpa e eficiente, e graças à linguagem utilizada, seus mecanismos permitem a construção de um programa flexível e modular.
 </br>
-Primeiros Passos:</br>
+</br>
+<h1>Primeiros Passos:</h1>
 1. Baixe o Banco de dados postgresql. No pacote do site oficial, virá instalado o pgadmin4;</br>
 2. Abra o pgadmin4 e digite a senha cadastrada no primeiro acesso;</br>
 3. Para usar o nosso banco de dados, será necessário importar o arquivo disponibilizado como “user_management”. Para isso, será necessário configurar o path do pgadmin: file>preferences>paths>binary paths>;</br>
