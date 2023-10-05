@@ -2,6 +2,7 @@ package routes
 
 import (
 	controllers "api/api/controllers"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,9 +11,12 @@ func AppRoutes(router *gin.Engine) *gin.RouterGroup {
 	userController := controllers.NewUserController()
 	accountController, err := controllers.NewAccountController()
 	transactionController := controllers.NewTransactionController()
+	bancoController := controllers.NewBancoController()
+	empregadoController := controllers.NewEmpregadoController()
+	ramoController := controllers.NewRamoController()
 
 	if err != nil {
-		// Handle the error, e.g., log it or return an error response
+		fmt.Println("Error initializing account controller")
 	}
 
 	router.GET("/", func(c *gin.Context) {
@@ -58,7 +62,6 @@ func AppRoutes(router *gin.Engine) *gin.RouterGroup {
 			})
 		}
 
-		// Contas
 		accounts := v1.Group("/accounts")
 		{
 			accounts.POST("/create", accountController.CreateAccount)
@@ -67,6 +70,32 @@ func AppRoutes(router *gin.Engine) *gin.RouterGroup {
 			accounts.DELETE("/:numeroConta", accountController.DeleteAccount)
 		}
 
+		bancos := v1.Group("/bancos")
+		{
+			bancos.POST("/", bancoController.CreateBanco)
+			bancos.GET("/", bancoController.FindAll)
+			bancos.GET("/:id", bancoController.FindByID)
+			bancos.PUT("/:id", bancoController.UpdateBanco)
+			bancos.DELETE("/:id", bancoController.DeleteBanco)
+		}
+
+		empregados := v1.Group("/empregados")
+		{
+			empregados.POST("/", empregadoController.CreateEmpregado)
+			empregados.GET("/", empregadoController.FindAll)
+			empregados.GET("/:id", empregadoController.FindByID)
+			empregados.PUT("/:id", empregadoController.UpdateEmpregado)
+			empregados.DELETE("/:id", empregadoController.DeleteEmpregado)
+		}
+
+		ramos := v1.Group("/ramos")
+		{
+			ramos.POST("/", ramoController.CreateRamo)
+			ramos.GET("/", ramoController.FindAll)
+			ramos.GET("/:id", ramoController.FindByID)
+			ramos.PUT("/:id", ramoController.UpdateRamo)
+			ramos.DELETE("/:id", ramoController.DeleteRamo)
+		}
 	}
 
 	return v1

@@ -3,6 +3,7 @@ package controllers
 import (
 	"api/api/entities"
 	"api/database"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,9 +23,8 @@ func NewTransactionController() *TransactionController {
 
 	if err != nil {
 		// Proper error handling, e.g., log the error and decide how to handle it
-		// fmt.Printf("Error fetching transactions from the database: %v\n", err)
-		// You can choose to return an error or handle it in your application logic.
-
+		fmt.Printf("Error fetching transactions from the database: %v\n", err)
+		
 		// If you decide to return an error:
 		// return nil, err
 	} else {

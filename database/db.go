@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
@@ -200,7 +201,7 @@ func GetTransaction(transactionID string) (*entities.Transaction, error) {
 
 func UpdateTransaction(transactionID string, transaction *entities.Transaction) (*entities.Transaction, error) {
 	fmt.Println("Updating transaction in the database...", transactionID, transaction.SenderId, transaction.ReceiverId)
-	
+
 	// Execute the database update query with valid UUIDs
 	_, err := db.Exec("UPDATE transactions SET quantia = $1, timestamp = $2, descricao = $3, senderid = $4, receiverid = $5 WHERE id = $6",
 		transaction.Quantia, time.Now().Format(time.RFC3339), transaction.Descricao, transaction.SenderId, transaction.ReceiverId, transactionID)
@@ -232,8 +233,6 @@ func GetAllTransactions() ([]entities.Transaction, error) {
 		var transaction entities.Transaction
 		err := rows.Scan(&transaction.ID, &transaction.Quantia, &transaction.Timestamp, &transaction.Descricao, &transaction.SenderId, &transaction.ReceiverId)
 		if err != nil {
-			fmt.Printf(("AAAAAAAAAAAA %v\n"), err)
-
 			return nil, err
 		}
 
@@ -242,10 +241,212 @@ func GetAllTransactions() ([]entities.Transaction, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Printf(("BBBBBBBBBBBBBBBBBBB %v\n"), err)
-
 		return nil, err
 	}
 
 	return transactions, nil
+}
+
+func CreateBanco(banco *entities.Banco) error {
+	_, err := db.Exec("INSERT INTO bancos (id, name, endereco) VALUES ($1, $2, $3)", banco.ID, banco.Name, banco.Endereco)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetBanco(bancoID string) (*entities.Banco, error) {
+	var banco entities.Banco
+	err := db.QueryRow("SELECT id, name, endereco FROM bancos WHERE id = $1", bancoID).
+		Scan(&banco.ID, &banco.Name, &banco.Endereco)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &banco, nil
+}
+
+func UpdateBanco(bancoID string, banco *entities.Banco) error {
+	_, err := db.Exec("UPDATE bancos SET name = $1, endereco = $2 WHERE id = $3", banco.Name, banco.Endereco, bancoID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteBanco(bancoID string) error {
+	_, err := db.Exec("DELETE FROM bancos WHERE id = $1", bancoID)
+	return err
+}
+
+func GetAllBancos() ([]entities.Banco, error) {
+	var bancos []entities.Banco
+
+	rows, err := db.Query("SELECT id, name, endereco FROM bancos")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var banco entities.Banco
+		err := rows.Scan(&banco.ID, &banco.Name, &banco.Endereco)
+		if err != nil {
+			return nil, err
+		}
+
+		bancos = append(bancos, banco)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return bancos, nil
+}
+
+func CreateEmpregado(empregado *entities.Empregado) error {
+	_, err := db.Exec("INSERT INTO empregados (id, name, surname, endereco, celular, funcao) VALUES ($1, $2, $3, $4, $5, $6)", empregado.ID, empregado.Name, empregado.Surname, empregado.Endereco, empregado.Celular, empregado.Funcao)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetEmpregado(empregadoID string) (*entities.Empregado, error) {
+	var empregado entities.Empregado
+	err := db.QueryRow("SELECT id, name, surname, endereco, celular, funcao FROM empregados WHERE id = $1", empregadoID).
+		Scan(&empregado.ID, &empregado.Name, &empregado.Surname, &empregado.Endereco, &empregado.Celular, &empregado.Funcao)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &empregado, nil
+}
+
+func UpdateEmpregado(empregadoID string, empregado *entities.Empregado) error {
+	_, err := db.Exec("UPDATE empregados SET name = $1, surname = $2, endereco = $3, celular = $4, funcao = $5 WHERE id = $6", empregado.Name, empregado.Surname, empregado.Endereco, empregado.Celular, empregado.Funcao, empregadoID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteEmpregado(empregadoID string) error {
+	_, err := db.Exec("DELETE FROM empregados WHERE id = $1", empregadoID)
+	return err
+}
+
+func GetAllEmpregados() ([]entities.Empregado, error) {
+	var empregados []entities.Empregado
+
+	rows, err := db.Query("SELECT id, name, surname, endereco, celular, funcao FROM empregados")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var empregado entities.Empregado
+		err := rows.Scan(&empregado.ID, &empregado.Name, &empregado.Surname, &empregado.Endereco, &empregado.Celular, &empregado.Funcao)
+		if err != nil {
+			return nil, err
+		}
+
+		empregados = append(empregados, empregado)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return empregados, nil
+}
+
+// CreateRamo inserts a new Ramo into the database.
+func CreateRamo(ramo *entities.Ramo) error {
+	ramo.ID = uuid.New().String()
+
+	_, err := db.Exec("INSERT INTO ramos (id, nome, endereco) VALUES ($1, $2, $3)", ramo.ID, ramo.Nome, ramo.Endereco)
+	if err != nil {
+		return err
+	}
+
+	// Handle additional operations related to contas and empregados if needed
+	// ...
+
+	return nil
+}
+
+// GetRamo retrieves a Ramo from the database by its ID.
+func GetRamo(ramoID string) (*entities.Ramo, error) {
+	var ramo entities.Ramo
+	err := db.QueryRow("SELECT id, nome, endereco FROM ramos WHERE id = $1", ramoID).
+		Scan(&ramo.ID, &ramo.Nome, &ramo.Endereco)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	// Retrieve related contas and empregados and assign them to the Ramo
+	// ...
+
+	return &ramo, nil
+}
+
+// UpdateRamo updates a Ramo in the database.
+func UpdateRamo(ramoID string, ramo *entities.Ramo) (*entities.Ramo, error) {
+	_, err := db.Exec("UPDATE ramos SET nome = $1, endereco = $2 WHERE id = $3", ramo.Nome, ramo.Endereco, ramoID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Handle additional update operations related to contas and empregados if needed
+	// ...
+
+	return ramo, nil
+}
+
+// DeleteRamo deletes a Ramo from the database.
+func DeleteRamo(ramoID string) error {
+	_, err := db.Exec("DELETE FROM ramos WHERE id = $1", ramoID)
+	return err
+}
+
+func GetAllRamos() ([]entities.Ramo, error) {
+	var ramos []entities.Ramo
+
+	rows, err := db.Query("SELECT id, nome, endereco FROM ramos")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var ramo entities.Ramo
+		err := rows.Scan(&ramo.ID, &ramo.Nome, &ramo.Endereco)
+		if err != nil {
+			return nil, err
+		}
+
+		// Append the retrieved ramo to the ramos slice
+		ramos = append(ramos, ramo)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ramos, nil
 }
