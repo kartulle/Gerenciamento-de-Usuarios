@@ -38,6 +38,7 @@ func CreateUser(c *gin.Context, userController *UserController) {
 
 	// Create a new User instance and save it to the database
 	newUser := entities.NewUser(user.Name, user.Surname, user.Endereco, user.NumeroCelular, nil)
+
 	if err := database.CreateUser(newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

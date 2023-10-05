@@ -9,6 +9,7 @@ import (
 func AppRoutes(router *gin.Engine) *gin.RouterGroup {
 	userController := controllers.NewUserController()
 	accountController, err := controllers.NewAccountController()
+	transactionController := controllers.NewTransactionController()
 
 	if err != nil {
 		// Handle the error, e.g., log it or return an error response
@@ -40,6 +41,23 @@ func AppRoutes(router *gin.Engine) *gin.RouterGroup {
 
 		}
 
+		v1.GET("/transactions", transactionController.FindAll)
+
+		transactionsRoutes := v1.Group("/transactions")
+		{
+			transactionsRoutes.POST("/", func(c *gin.Context) {
+				controllers.CreateTransaction(c, transactionController)
+			})
+
+			transactionsRoutes.GET("/:id", controllers.GetTransaction)
+			transactionsRoutes.PUT("/:id", func(c *gin.Context) {
+				controllers.UpdateTransaction(c, transactionController)
+			})
+			transactionsRoutes.DELETE("/:id", func(c *gin.Context) {
+				controllers.DeleteTransaction(c, transactionController)
+			})
+		}
+
 		// Contas
 		accounts := v1.Group("/accounts")
 		{
@@ -48,6 +66,7 @@ func AppRoutes(router *gin.Engine) *gin.RouterGroup {
 			accounts.PUT("/:numeroConta", accountController.UpdateAccount)
 			accounts.DELETE("/:numeroConta", accountController.DeleteAccount)
 		}
+
 	}
 
 	return v1

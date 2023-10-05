@@ -1,6 +1,6 @@
 package entities
 
-/* import (
+import (
 	"github.com/google/uuid"
 )
 
@@ -24,4 +24,3 @@ func NewBanco() *Banco {
 
 	return &Banco
 }
-*/

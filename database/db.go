@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -38,7 +39,6 @@ func CreateUser(user *entities.User) error {
 		return err
 	}
 
-	fmt.Println("Should've worked", user.ID)
 	return nil
 }
 
@@ -49,10 +49,10 @@ func GetUser(userID string) (*entities.User, error) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Println("Here", userID)
+			fmt.Println("User not found", userID)
 			return nil, nil // User not found
 		}
-		fmt.Println("Here aaaa")
+		fmt.Println("An unexpected error happened")
 		return nil, err // Other error
 	}
 
@@ -64,6 +64,7 @@ func GetUser(userID string) (*entities.User, error) {
 func UpdateUser(userID string, user *entities.User) (*entities.User, error) {
 	_, err := db.Exec("UPDATE users SET name = $1, surname = $2, endereco = $3, celular = $4 WHERE id = $5",
 		user.Name, user.Surname, user.Endereco, user.NumeroCelular, userID)
+
 	if err != nil {
 		return nil, err
 	}
@@ -166,4 +167,85 @@ func GetAllAccounts() ([]*entities.Account, error) {
 	}
 
 	return accounts, nil
+}
+
+func CreateTransaction(transaction *entities.Transaction) error {
+	_, err := db.Exec("INSERT INTO transactions (id, quantia, timestamp, descricao, senderid, receiverid) VALUES ($1, $2, $3, $4, $5, $6)", transaction.ID, transaction.Quantia, transaction.Timestamp, transaction.Descricao, transaction.SenderId, transaction.ReceiverId)
+
+	if err != nil {
+		fmt.Printf(("Error inserting transaction into the database %v\n"), err)
+		return err
+	}
+
+	return nil
+}
+
+func GetTransaction(transactionID string) (*entities.Transaction, error) {
+	var transaction entities.Transaction
+	err := db.QueryRow("SELECT id, quantia, timestamp, descricao, senderid, receiverid FROM transactions WHERE id = $1", transactionID).Scan(&transaction.ID, &transaction.Quantia, &transaction.Timestamp, &transaction.Descricao, &transaction.SenderId, &transaction.ReceiverId)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Println("Transaction not found", transactionID)
+			return nil, nil
+		}
+		fmt.Println("An unexpected error happened")
+		return nil, err // Other error
+	}
+
+	fmt.Println(&transaction)
+
+	return &transaction, nil
+}
+
+func UpdateTransaction(transactionID string, transaction *entities.Transaction) (*entities.Transaction, error) {
+	fmt.Println("Updating transaction in the database...", transactionID, transaction.SenderId, transaction.ReceiverId)
+	
+	// Execute the database update query with valid UUIDs
+	_, err := db.Exec("UPDATE transactions SET quantia = $1, timestamp = $2, descricao = $3, senderid = $4, receiverid = $5 WHERE id = $6",
+		transaction.Quantia, time.Now().Format(time.RFC3339), transaction.Descricao, transaction.SenderId, transaction.ReceiverId, transactionID)
+
+	if err != nil {
+		fmt.Println("Error updating transaction:", err)
+		return nil, err
+	}
+
+	return transaction, nil
+}
+func DeleteTransaction(transactionID string) error {
+	_, err := db.Exec("DELETE FROM transactions WHERE id = $1", transactionID)
+	return err
+}
+
+func GetAllTransactions() ([]entities.Transaction, error) {
+	var transactions []entities.Transaction
+
+	rows, err := db.Query("SELECT id, quantia, timestamp, descricao, senderid, receiverid FROM transactions")
+	if err != nil {
+		fmt.Printf(("Error retrieving transaction into the database %v\n"), err)
+
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var transaction entities.Transaction
+		err := rows.Scan(&transaction.ID, &transaction.Quantia, &transaction.Timestamp, &transaction.Descricao, &transaction.SenderId, &transaction.ReceiverId)
+		if err != nil {
+			fmt.Printf(("AAAAAAAAAAAA %v\n"), err)
+
+			return nil, err
+		}
+
+		// Append the retrieved transaction to the transactions slice
+		transactions = append(transactions, transaction)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Printf(("BBBBBBBBBBBBBBBBBBB %v\n"), err)
+
+		return nil, err
+	}
+
+	return transactions, nil
 }

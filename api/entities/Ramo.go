@@ -1,6 +1,6 @@
 package entities
 
-/* import (
+import (
 	"github.com/google/uuid"
 )
 
@@ -23,4 +23,4 @@ func NewRamo() *Ramo {
 		ContasEnvolvidas: []User{user},
 	}
 	return &ramo
-} */
+}
